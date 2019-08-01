@@ -1,6 +1,3 @@
-import os
-import shlex
-
 from caisson.decompressors import get_decompressors
 from caisson.parser import build_arg_parser
 from caisson.io import decompress, remove_compressed_files

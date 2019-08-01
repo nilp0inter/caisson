@@ -1,10 +1,12 @@
-from abc import ABCMeta, abstractmethod, abstractstaticmethod
+from abc import ABCMeta, abstractmethod
 import subprocess
 import shutil
 import re
 
 
 class Decompressor(metaclass=ABCMeta):
+    command = None
+
     def __init__(self, configuration):
         self.configuration = configuration
         self.__configure__()
@@ -45,9 +47,9 @@ class Unrar(Decompressor):
 
     def can_decompress(self, path):
         path = path.lower()
-        return (re.match("\.r0+1$", path)
+        return (re.match(r"\.r0+1$", path)
                 or path.endswith(".part1.rar")
-                or (not re.match("part[0-9]+\.rar$", path)
+                or (not re.match(r"part[0-9]+\.rar$", path)
                     and path.endswith(".rar")))
 
     def decompress(self, path, destination):

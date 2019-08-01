@@ -57,4 +57,3 @@ def remove_compressed_files(path, decompressors):
             remove_compressed_files(entry.path, decompressors)
         else:
             pass
-
