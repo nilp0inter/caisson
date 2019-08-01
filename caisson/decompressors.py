@@ -42,7 +42,6 @@ class Unzip(Decompressor):
         args = [self.command,
                 '-d', destination,
                 path]
-        print(args)
         result = subprocess.run(args)
         result.check_returncode()
 
@@ -62,7 +61,6 @@ class Unrar(Decompressor):
         args = [self.command,
                 'x', path,
                 destination]
-        print(args)
         result = subprocess.run(args)
         result.check_returncode()
 
@@ -78,7 +76,6 @@ class SevenZip(Decompressor):
         args = [self.command,
                 'x', '-o' + destination,
                 path]
-        print(args)
         result = subprocess.run(args)
         result.check_returncode()
 
