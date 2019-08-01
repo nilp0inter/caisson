@@ -1,4 +1,4 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta, abstractmethod, abstractproperty
 import subprocess
 import shutil
 import re
@@ -6,6 +6,10 @@ import re
 
 class Decompressor(metaclass=ABCMeta):
     command = None
+
+    @abstractproperty
+    def name(self):
+        pass
 
     def __init__(self, configuration):
         self.configuration = configuration
@@ -29,6 +33,7 @@ class Decompressor(metaclass=ABCMeta):
 
 class Unzip(Decompressor):
     command = shutil.which("unzip")
+    name = "unzip"
 
     def can_decompress(self, path):
         return path.lower().endswith('.zip')
@@ -44,6 +49,7 @@ class Unzip(Decompressor):
 
 class Unrar(Decompressor):
     command = shutil.which("unrar")
+    name = "unrar"
 
     def can_decompress(self, path):
         path = path.lower()
@@ -63,6 +69,7 @@ class Unrar(Decompressor):
 
 class SevenZip(Decompressor):
     command = shutil.which("7z")
+    name = "7z"
 
     def can_decompress(self, path):
         return path.lower().endswith('.7z')
@@ -76,11 +83,17 @@ class SevenZip(Decompressor):
         result.check_returncode()
 
 
-DECOMPRESSORS = [decompressor
-                 for decompressor in Decompressor.__subclasses__()
-                 if decompressor.is_available()]
+DECOMPRESSORS = list(Decompressor.__subclasses__())
+AVAILABLE_DECOMPRESSORS = [decompressor
+                           for decompressor in DECOMPRESSORS
+                           if decompressor.is_available()]
 
 
 def get_decompressors(configuration):
     return [decompressor(configuration)
+            for decompressor in AVAILABLE_DECOMPRESSORS]
+
+
+def availability():
+    return [(decompressor, decompressor in AVAILABLE_DECOMPRESSORS)
             for decompressor in DECOMPRESSORS]
