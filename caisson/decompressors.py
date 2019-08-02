@@ -1,7 +1,8 @@
 from abc import ABCMeta, abstractmethod, abstractproperty
-import subprocess
-import shutil
+import os
 import re
+import shutil
+import subprocess
 
 from caisson.configuration import Overwrite
 from caisson import log
@@ -110,8 +111,81 @@ class SevenZip(Decompressor):
         else:
             pass  # Default behavior of `7z`
 
-
         args = [self.command, 'x'] + options + [path]
+        result = subprocess.run(args)
+        result.check_returncode()
+
+class FileDecompressor:
+    def can_decompress(self, path):
+        return path.lower().endswith(self.extension)
+
+    def decompress(self, path, destination):
+        options = []
+        options.extend(['--stdout', '--decompress'])
+
+        args = [self.command] + options + [path]
+
+        final_filename = os.path.join(
+            destination,
+            os.path.basename(path[:-len(self.extension)]))
+
+        with open(final_filename, 'wb') as final:
+            result = subprocess.run(args, stdout=final)
+
+        result.check_returncode()
+
+
+class Gzip(FileDecompressor, Decompressor):
+    command = shutil.which("gzip")
+    name = "gzip"
+    extension = ".gz"
+
+
+class Bzip2(FileDecompressor, Decompressor):
+    command = shutil.which("bzip2")
+    name = "bzip2"
+    extension = ".bz2"
+
+
+class Lzma(FileDecompressor, Decompressor):
+    command = shutil.which("lzma")
+    name = "lzma (.lzma)"
+    extension = ".lzma"
+
+
+class Xz(FileDecompressor, Decompressor):
+    command = shutil.which("lzma")
+    name = "lzma (.xz)"
+    extension = ".xz"
+
+
+class Tar(Decompressor):
+    command = shutil.which("tar")
+    name = "tar"
+    extension = ".tar"
+
+    def can_decompress(self, path):
+        return path.lower().endswith(self.extension)
+
+    def decompress(self, path, destination):
+        options = []
+        options.extend(['-f', path])
+        options.extend(['-C', destination])
+
+        if self.configuration.overwrite is Overwrite.ALWAYS:
+            options.extend(['--overwrite'])
+        elif self.configuration.overwrite is Overwrite.NEVER:
+            options.extend(['--keep-old-files'])
+        elif self.configuration.overwrite is Overwrite.RENAME:
+            options.extend(['-aou'])
+        else:
+            log.warning(("%r decompressor doesn't support mode %r, "
+                         "using `--overwrite=never`"),
+                        self.name,
+                        self.configuration.overwrite)
+            options.extend(['--keep-old-files'])
+
+        args = [self.command, '-x'] + options
         result = subprocess.run(args)
         result.check_returncode()
 
