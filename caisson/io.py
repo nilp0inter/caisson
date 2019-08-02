@@ -9,7 +9,7 @@ def final_path(source, destination):
 
 
 def decompress_file(source, destination, decompressors):
-    log.info("decompressing file %r.", source)
+    log.info("analyzing file %r", source)
     for decompressor in decompressors:
         if decompressor.can_decompress(source):
             log.debug("found decompressor %r for %r",

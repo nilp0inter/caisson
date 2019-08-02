@@ -3,6 +3,7 @@ import sys
 
 from caisson import constants
 from caisson import decompressors
+from caisson.configuration import Overwrite
 
 
 class ListDecompressorsAction(argparse.Action):
@@ -21,6 +22,12 @@ def build_arg_parser():
     loglevel.add_argument("-v", "--verbose", action="store_true")
     loglevel.add_argument("-d", "--debug", action="store_true")
     parser.add_argument("--list", action=ListDecompressorsAction, nargs=0)
-    parser.add_argument("source", nargs="+")
+
+    parser.add_argument("-o", "--overwrite", default=Overwrite.ASK,
+                        type=Overwrite,
+                        action="store",
+                        choices=list(Overwrite))
+
+    parser.add_argument("source", nargs="*")
     parser.add_argument("destination", nargs=1)
     return parser

@@ -3,6 +3,9 @@ import subprocess
 import shutil
 import re
 
+from caisson.configuration import Overwrite
+from caisson import log
+
 
 class Decompressor(metaclass=ABCMeta):
     command = None
@@ -39,9 +42,22 @@ class Unzip(Decompressor):
         return path.lower().endswith('.zip')
 
     def decompress(self, path, destination):
-        args = [self.command,
-                '-d', destination,
-                path]
+        options = []
+        options.extend(['-d', destination])
+
+        if self.configuration.overwrite is Overwrite.ALWAYS:
+            options.extend(['-o'])
+        elif self.configuration.overwrite is Overwrite.NEVER:
+            options.extend(['-n'])
+        elif self.configuration.overwrite is Overwrite.RENAME:
+            log.warning(("%r decompressor doesn't support renaming, "
+                         "using `--overwrite=never`"),
+                        self.name)
+            options.extend(['-n'])
+        else:
+            pass  # Default behavior of `unzip`
+
+        args = [self.command] + options + [path]
         result = subprocess.run(args)
         result.check_returncode()
 
@@ -58,9 +74,18 @@ class Unrar(Decompressor):
                     and path.endswith(".rar")))
 
     def decompress(self, path, destination):
-        args = [self.command,
-                'x', path,
-                destination]
+        options = []
+
+        if self.configuration.overwrite is Overwrite.ALWAYS:
+            options.extend(['o+'])
+        elif self.configuration.overwrite is Overwrite.NEVER:
+            options.extend(['o-'])
+        elif self.configuration.overwrite is Overwrite.RENAME:
+            options.extend(['or'])
+        else:
+            pass  # Default behavior of `unrar`
+
+        args = [self.command, 'x'] + options + [path, destination]
         result = subprocess.run(args)
         result.check_returncode()
 
@@ -73,9 +98,20 @@ class SevenZip(Decompressor):
         return path.lower().endswith('.7z')
 
     def decompress(self, path, destination):
-        args = [self.command,
-                'x', '-o' + destination,
-                path]
+        options = []
+        options.extend(['-o' + destination])
+
+        if self.configuration.overwrite is Overwrite.ALWAYS:
+            options.extend(['-aoa'])
+        elif self.configuration.overwrite is Overwrite.NEVER:
+            options.extend(['-aos'])
+        elif self.configuration.overwrite is Overwrite.RENAME:
+            options.extend(['-aou'])
+        else:
+            pass  # Default behavior of `7z`
+
+
+        args = [self.command, 'x'] + options + [path]
         result = subprocess.run(args)
         result.check_returncode()
 

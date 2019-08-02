@@ -25,7 +25,7 @@ def main():
 
     caisson(sources=args.source,
             destination=args.destination[0],
-            configuration=dict())
+            configuration=args)
 
 
 if __name__ == "__main__":
