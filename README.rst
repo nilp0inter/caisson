@@ -16,7 +16,7 @@ Installation
 Usage
 -----
 
-.. code-block:: shell
+.. code-block:: plain
 
    $ caisson --help
    usage: caisson [-h] [-q | -v | -d] [--list] [-o {always,never,ask,rename}]
