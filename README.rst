@@ -1,5 +1,5 @@
-`caisson`: The Recursive File Decompressor
-==========================================
+`caisson`: The Recursive Decompressor
+=====================================
 
 Extract all compressed files recursively using external decompressors
 found in the system.
