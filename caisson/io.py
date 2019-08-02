@@ -21,7 +21,7 @@ def decompress_file(source, destination, decompressors):
                       new_destination)
             os.makedirs(new_destination, exist_ok=True)
 
-            log.info("decompressing file %r with %r.",
+            log.info("decompressing file %r with %r",
                      source,
                      decompressor.name)
             try:
