@@ -78,11 +78,11 @@ class Unrar(Decompressor):
         options = []
 
         if self.configuration.overwrite is Overwrite.ALWAYS:
-            options.extend(['o+'])
+            options.extend(['-o+'])
         elif self.configuration.overwrite is Overwrite.NEVER:
-            options.extend(['o-'])
+            options.extend(['-o-'])
         elif self.configuration.overwrite is Overwrite.RENAME:
-            options.extend(['or'])
+            options.extend(['-or'])
         else:
             pass  # Default behavior of `unrar`
 
