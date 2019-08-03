@@ -2,7 +2,7 @@ import logging
 
 from caisson.decompressors import get_decompressors
 from caisson.parser import build_arg_parser
-from caisson.io import decompress, remove_compressed_files
+from caisson.io import decompress
 from caisson import log
 
 
@@ -12,7 +12,6 @@ def caisson(sources, destination, configuration):
     while decompress([destination], destination, decompressors,
                      subdir=False, remove_source=True):
         log.info("some files were decompressed, doing another pass")
-    remove_compressed_files(destination, decompressors)
 
 
 def main():

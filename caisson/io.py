@@ -79,18 +79,3 @@ def decompress(sources, destination, decompressors, subdir=True,
                                                  decompressors,
                                                  remove_source=remove_source)
     return any_decompression
-
-
-def remove_compressed_files(path, decompressors):
-    log.debug("looking into directory %r for compressed files for removal",
-              path)
-    for entry in os.scandir(path):
-        if entry.is_file():
-            for decompressor in decompressors:
-                if decompressor.can_decompress(entry.path):
-                    log.info("removing compressed file %r", entry.path)
-                    os.unlink(entry.path)
-        elif entry.is_dir():
-            remove_compressed_files(entry.path, decompressors)
-        else:
-            pass
