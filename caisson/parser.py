@@ -1,7 +1,7 @@
 import argparse
 import sys
 
-from caisson import constants
+import caisson
 from caisson import decompressors
 from caisson.configuration import Overwrite
 
@@ -15,8 +15,8 @@ class ListDecompressorsAction(argparse.Action):
 
 def build_arg_parser():
     parser = argparse.ArgumentParser(
-        prog=constants.PROGRAM_NAME,
-        description=constants.PROGRAM_DESCRIPTION)
+        prog=caisson.__name__,
+        description=caisson.__description__)
     loglevel = parser.add_mutually_exclusive_group()
     loglevel.add_argument("-q", "--quiet", action="store_true",
                           help="don't print any log")
